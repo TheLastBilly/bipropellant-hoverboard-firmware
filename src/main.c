@@ -583,14 +583,15 @@ int main(void) {
       // tapp one or other side twice in 2s, with at least 1/4s between to
       // enable hoverboard mode.
       if (CONTROL_TYPE_NONE == control_type){
-        if (sensor_data[0].doubletap || sensor_data[1].doubletap){
-          if (FlashContent.HoverboardEnable){
-            sensor_control = 1;
-          }
-          consoleLog("double tap -> hoverboard mode\r\n");
-          sensor_data[0].doubletap = 0;
-          sensor_data[1].doubletap = 0;
-        }
+        // if (sensor_data[0].doubletap || sensor_data[1].doubletap){
+        //   if (FlashContent.HoverboardEnable){
+        //     sensor_control = 1;
+        //   }
+        //   consoleLog("double tap -> hoverboard mode\r\n");
+        //   sensor_data[0].doubletap = 0;
+        //   sensor_data[1].doubletap = 0;
+        // }
+        sensor_control = 1;
       }
 
       if (electrical_measurements.charging){
@@ -604,19 +605,23 @@ int main(void) {
       #ifdef CONTROL_SENSOR
         int setcolours = 1;
         if (sensor_control && FlashContent.HoverboardEnable){
-          if ((!sensor_data[0].rollhigh) || (!sensor_data[1].rollhigh)){
+          // if ((!sensor_data[0].rollhigh) || (!sensor_data[1].rollhigh)){
+          if ((!sensor_data[1].rollhigh)){
             if (enable) {
               consoleLog("disable by rollHigh\r\n");
             }
             enable = 0;
           } else {
             if(!electrical_measurements.charging){
-              int either_sensor_ok = sensor_data[0].sensor_ok || sensor_data[1].sensor_ok;
+              // int either_sensor_ok = sensor_data[0].sensor_ok || sensor_data[1].sensor_ok;
+              int either_sensor_ok = sensor_data[1].sensor_ok;
               int dirs[2] = {-1, 1};
 
-              for (int i = 0; i < 2; i++){
+              // for (int i = 0; i < 2; i++){
+              for (int i = 1; i < 2; i++){
                 if (sensor_data[i].sensor_ok){
-                  pwms[i] = CLAMP(dirs[i]*(sensor_data[i].complete.Angle - sensor_data[i].Center)/3, -FlashContent.HoverboardPWMLimit, FlashContent.HoverboardPWMLimit);
+                  pwms[0] = CLAMP(dirs[i]*(sensor_data[i].complete.Angle - sensor_data[i].Center)/3, -FlashContent.HoverboardPWMLimit, FlashContent.HoverboardPWMLimit);
+                  pwms[1] = -pwms[0];
                   sensor_set_colour(i, SENSOR_COLOUR_YELLOW);
                   if (!enable) {
                     consoleLog("enable by hoverboard mode & !rollHigh\r\n");
@@ -649,7 +654,8 @@ int main(void) {
         // if not set above, set default colours now
         // changed so that  it did not cycle btween green/yellow
         if(setcolours) {
-          for (int i = 0; i < 2; i++){
+          // for (int i = 0; i < 2; i++){
+          for (int i = 1; i < 2; i++){
             if  (sensor_data[i].sensor_ok){
               sensor_set_colour(i, SENSOR_COLOUR_GREEN);
             } else {
@@ -814,7 +820,7 @@ int main(void) {
       #endif
 
       #ifdef CONTROL_SENSOR
-        setScopeChannel(0, (int)sensor_data[0].complete.Angle);  // 1: ADC1
+        // setScopeChannel(0, (int)sensor_data[0].complete.Angle);  // 1: ADC1
         setScopeChannel(1, -(int)sensor_data[1].complete.Angle);  // 2: ADC2
       #endif
 
@@ -1108,7 +1114,7 @@ void check_power_button(){
 
         #if defined CONTROL_SENSOR
           // read current board angles, and save to flash as center
-          FlashContent.calibration_0 = sensor_data[0].Center_calibration = sensor_data[0].complete.Angle;
+          // FlashContent.calibration_0 = sensor_data[0].Center_calibration = sensor_data[0].complete.Angle;
           FlashContent.calibration_1 = sensor_data[1].Center_calibration = sensor_data[1].complete.Angle;
           writeFlash( (unsigned char *)&FlashContent, sizeof(FlashContent) );
           consoleLog("*** Write Flash Calibration data\r\n");
