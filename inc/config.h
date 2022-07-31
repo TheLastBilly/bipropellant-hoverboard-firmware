@@ -454,7 +454,6 @@
   #define BEEPS_BACKWARD 0    // 0 or 1
 #endif
 
-
 #if (INCLUDE_PROTOCOL == NO_PROTOCOL)
   #undef INCLUDE_PROTOCOL
 #endif

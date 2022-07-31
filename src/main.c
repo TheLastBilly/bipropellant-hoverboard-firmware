@@ -606,7 +606,7 @@ int main(void) {
         int setcolours = 1;
         if (sensor_control && FlashContent.HoverboardEnable){
           // if ((!sensor_data[0].rollhigh) || (!sensor_data[1].rollhigh)){
-          if ((!sensor_data[1].rollhigh)){
+          if (0){
             if (enable) {
               consoleLog("disable by rollHigh\r\n");
             }
@@ -620,7 +620,7 @@ int main(void) {
               // for (int i = 0; i < 2; i++){
               for (int i = 1; i < 2; i++){
                 if (sensor_data[i].sensor_ok){
-                  pwms[0] = CLAMP(dirs[i]*(sensor_data[i].complete.Angle - sensor_data[i].Center)/3, -FlashContent.HoverboardPWMLimit, FlashContent.HoverboardPWMLimit);
+                  pwms[0] = CLAMP(1000*dirs[i]*(sensor_data[i].complete.Angle - sensor_data[i].Center)/13000, -1000, 1000);
                   pwms[1] = -pwms[0];
                   sensor_set_colour(i, SENSOR_COLOUR_YELLOW);
                   if (!enable) {
